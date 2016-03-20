@@ -10,10 +10,11 @@ It can be downloaded here [python3.5.0 tarball] (https://www.python.org/ftp/pyth
 
 Discord.py by Rapptz can be downloaded [here] (https://github.com/Rapptz/discord.py)
 
-__NOTE: To effectively install discord.py I had to use pip3.5 install instead of pip install __
+**NOTE: To effectively install discord.py I had to use pip3.5 install instead of pip install**
 
+
+rename config.txt to config.ini before running first time. 
 
 
 Im still learning github. So there may be a clusterfuck of pulls and stuff. Please bear with me. 
-
 
