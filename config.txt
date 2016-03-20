@@ -1,0 +1,3 @@
+[logins] 
+email: your@email.net
+pass: 50centistheBest!
