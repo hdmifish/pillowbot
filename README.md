@@ -1,5 +1,6 @@
 # Pillowbot Readme
-## Written by Punk, Alien, and iso. *but mainly iso* 
+## Written by Punk, Alien, and iso. 
+#####                      *but mainly iso* 
 
 
 Pillow bot is a listener assistant bot written for Discord. 
@@ -21,7 +22,7 @@ Im still learning github. So there may be a clusterfuck of pulls and stuff. Plea
 
 
 ##For those of you that want to play with this on a raspberry pi: 
-###I have a 2B+ at no overclock, 3 radios and this bot run just fine on it 
+###I have a 2B+ at no overclock, 3 radios and this bot runs just fine on it 
 
 [Raspberry pi 2 python3.5 instructions](http://bohdan-danishevsky.blogspot.com/2015/10/building-python-35-on-raspberry-pi-2.html) 
 
