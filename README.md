@@ -1,6 +1,9 @@
 # Pillowbot Readme
 ## Written by Punk, Alien, and iso. 
-#####                      *but mainly iso* 
+##### (*but mainly iso*) 
+
+
+
 
 
 Pillow bot is a listener assistant bot written for Discord. 
@@ -18,6 +21,12 @@ rename config.txt to config.ini before running first time.
 
 
 Im still learning github. So there may be a clusterfuck of pulls and stuff. Please bear with me. 
+
+
+
+
+
+
 
 
 
@@ -41,7 +50,7 @@ Im still learning github. So there may be a clusterfuck of pulls and stuff. Plea
 
    ```
    $ sudo reboot now
-   $ sudo apt-get update && apt-get upgrade -y
+   $ sudo apt-get update && sudo apt-get upgrade -y
    $ python3.5.0 -- version
    ```
 
