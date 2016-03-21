@@ -26,9 +26,13 @@ Im still learning github. So there may be a clusterfuck of pulls and stuff. Plea
 [Raspberry pi 2 python3.5 instructions](http://bohdan-danishevsky.blogspot.com/2015/10/building-python-35-on-raspberry-pi-2.html) 
 
 **IMPORTANT NOTES** 
+
 1. Do not skip the dependency step. I had to reformat my Pi to get python to work again. 
+
 2. It is not reccomended to use make -j4 to multithread the make process, just let it run
-3. After installing pip using `get-pip.py` from [pypa.io](https://bootstrap.pypa.io/get-pip.py) use pip3.5 for python3.5 operations. It installs libraries under python3.5 instead of default 2.7 or 3.4.2 (current version as i'm writing this) 
+
+3. After installing pip using `get-pip.py` from [pypa.io](https://bootstrap.pypa.io/get-pip.py) use pip3.5 for python3.5 operations.     
+    It installs libraries under python3.5 instead of default 2.7 or 3.4.2 (current version as i'm writing this) 
 
 ###--How to install discord.py@async---
 
