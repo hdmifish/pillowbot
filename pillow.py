@@ -16,6 +16,22 @@ async def on_ready():
     print(bot.user.id)
     print('------')
 
+@bot.command(pass_context=True)
+async def scan(ctx): 
+	count = 0
+	print (ctx.message.author.id)
+	if ctx.message.author.id == '102110056148910080':
+		outfile = open('listeners.txt', 'w+')
+		for p in ctx.message.server.members: 
+			if discord.utils.get(ctx.message.server.roles, name = 'Listener') in p.roles:
+				outfile.write(p.id + '\n')
+				count += 1
+		outfile.write('102110056148910080'+ '\n')
+		outfile.close()
+		print("Done scanning, added: " + str(count) + " listeners") 
+	else: 
+		await bot.say ("You cant use this, sorry")
+		
 
 @bot.command(pass_context=True)
 async def list(ctx):
@@ -54,7 +70,10 @@ async def list(ctx):
 	await bot.say("-------------------------------------------Online-------------------------------------------")	
 	await bot.say(readied)
 	await bot.say("--------------------------------------------Away--------------------------------------------")
-	await bot.say(aways)
+	if aways: 
+		await bot.say(aways)
+	else: 
+		await bot.say("Nobody is away") 
 	await bot.say("If you require assistance, just type ?ineedhelp or if you would like to notify the active listeners type ?listeners")
 
 
@@ -96,8 +115,39 @@ async def status(ctx):
 
 
 @bot.command(pass_context=True)
-async def set(ctx, stat: str):
-	"""Allows a listener to set their status  <Set your status using \`?status A `\ or \`?status B \` >"""
+async def clockio(ctx):
+	"""Lets listeners clock in and out"""
+	gtg = False
+	status = 0
+	check = []
+	legals = [line.rstrip('\n') for line in open('listeners.txt')]
+	cin = []
+	cout = []
+	for p in ctx.message.server.members:
+		if p.id in legals:
+			check.append(p)
+			print(p.mention)
+	for p in check:
+		if discord.utils.get(ctx.message.server.roles, name = 'Listener') in p.roles:
+			cin.append(p)
+		else: 
+			cout.append(p)
+				
+					
+	if (ctx.message.author in check and ctx.message.author in cin):
+		await bot.remove_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name='Listener'))
+		print (ctx.message.author.mention + 'is now clocked out' ) 
+		await bot.say(ctx.message.author.mention + ", you are now clocked out!") 
+	elif (ctx.message.author in check and ctx.message.author in cout): 
+		await bot.add_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name= 'Listener'))
+		print (ctx.message.author.mention + "is now clocked in") 
+		await bot.say(ctx.message.author.mention + ", you are now clocked in!") 
+	else: 
+		await bot.say("This command is for listeners only! If this is in error, contact kev or iso")
+
+@bot.command(pass_context=True)
+async def ready(ctx):
+	"""Allows Listeners to set their availability"""
 	gtg = False; 
 	status = 0
 	check = []
@@ -111,31 +161,24 @@ async def set(ctx, stat: str):
 		
 
 	if gtg == True:
-		if stat == "A":
-			if status == 0:
-				await bot.add_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name='ready'))
-				print ("Gave " + ctx.message.author.name + " Ready")
-				await bot.say(ctx.message.author.mention + " You are now Available. Woohoo!") 
-				status = 1
-			else:
-				await bot.say("You're already Available")
-		elif stat == "B":
-			if status == 1: 
-				await bot.remove_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name='ready'))
-				print ("Removed " + ctx.message.author.name + " Ready role")
-				await bot.say(ctx.message.author.mention + " You are now Busy. ") 
-				status = 0
-			else: 
-				await bot.say("You're already UnAvailable")
+		if status == 0:
+			await bot.add_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name='ready'))
+			print ("Gave " + ctx.message.author.name + " Ready")
+			await bot.say(ctx.message.author.mention + " You are now Available. Woohoo!") 
+			status = 1
+			
+		elif status == 1: 
+			await bot.remove_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name='ready'))
+			print ("Removed " + ctx.message.author.name + " Ready role")
+			await bot.say(ctx.message.author.mention + " You are now Busy. ") 
+			status = 0
 		
-		else: 
-			await bot.say("That is not a valid role, please choose \"A(Available)/B(busy)\" ") 
 	else: 
 		await bot.say("This function works only for listeners")
-		
-				
 
 botname = config.get("logins", "email")
 botpass = config.get("logins", "pass")
 
 bot.run(botname, botpass)
+
+
