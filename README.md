@@ -33,31 +33,32 @@ Im still learning github. So there may be a clusterfuck of pulls and stuff. Plea
 ###--How to install discord.py@async---
 
 1. After installing python3.5 make sure you do these 3 steps: 
-```
-$ sudo reboot now
-$ sudo apt-get update && apt-get upgrade -y
-$ python3.5.0 -- version
-```
 
-python3.5.0 should ouput something like `Python3.5.0` 
+   ```
+   $ sudo reboot now
+   $ sudo apt-get update && apt-get upgrade -y
+   $ python3.5.0 -- version
+   ```
 
-if you get a "not found" error, check your installation and make sure you did everything right
+   python3.5.0 should ouput something like `Python3.5.0` 
+
+   if you get a "not found" error, check your installation and make sure you did everything right
 
 
 
 2. sit in your home directory (`~`) and do `pip3.5 install git+https://github.com/Rapptz/discord.py@async` 
 3. then do `pip3.5 install --upgade discord.py`
 
-*and now for the fun bits* 
+   *and now for the fun bits* 
 
 4. Follow these instructions to install pillowbot 
-```
-$ sudo mkdir /pillow (you can name this whatever you like) 
-$ sudo git clone https://github.com/hdmifish/pillowbot.git /pillow
-$ cd /pillow
-<fill out and rename your config file to config.ini, do not use ' or " when changing the fields> 
------if you dont know how to rename do $ sudo mv config.txt config.ini 
-$ python3.5 pillow.py 
-```
+   ```
+   $ sudo mkdir /pillow (you can name this whatever you like) 
+   $ sudo git clone https://github.com/hdmifish/pillowbot.git /pillow
+   $ cd /pillow
+   <fill out and rename your config file to config.ini, do not use ' or " when changing the fields> 
+   -----if you dont know how to rename do $ sudo mv config.txt config.ini 
+   $ python3.5 pillow.py 
+   ```
 
-6. If you get any errors, put them in issues. This is still under development. Currently as I'm writing this pillowbot is `pillowbot 0.2.0` 
+5. If you get any errors, put them in issues. This is still under development. Currently as I'm writing this pillowbot is `pillowbot 0.2.0` 
