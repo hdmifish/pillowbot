@@ -1,5 +1,8 @@
-#Version: 0.2.0
+#Version: 0.2.1
+#last edit by: iso, at 3:47 am CST March 23
 
+import os
+import time
 import discord
 from discord.ext import commands
 import configparser
@@ -13,13 +16,19 @@ config.read("config.ini")
 
 @bot.event
 async def on_ready():
-    print('Logged in as')
-    print(bot.user.name)
-    print(bot.user.id)
-    print('------')
+	print('Logged in as')
+	print(bot.user.name)
+	print(bot.user.id)
+	print('------')
+	f = open('listeners.txt') 
+	lines = f.read().splitlines() 
+	for line in lines: 
+		print (line) 
+	f.close() 
 
 @bot.command(pass_context=True)
 async def scan(ctx): 
+	"""This does nothing...Ignore it"""
 	count = 0
 	print (ctx.message.author.id)
 	if ctx.message.author.id == '102110056148910080':
@@ -28,12 +37,70 @@ async def scan(ctx):
 			if discord.utils.get(ctx.message.server.roles, name = 'Listener') in p.roles:
 				outfile.write(p.id + '\n')
 				count += 1
-		outfile.write('102110056148910080'+ '\n')
 		outfile.close()
 		print("Done scanning, added: " + str(count) + " listeners") 
+		await bot.say("Scanned: " + str(count) + "! Use clockadd to insert more") 
 	else: 
 		await bot.say ("You cant use this, sorry")
 		
+@bot.command(pass_context=True)
+async def clockadd(ctx, user : discord.Member): 
+	"""Managers only command"""
+	if discord.utils.get(ctx.message.server.roles, name = 'Listener Manager') in ctx.message.author.roles:
+		found = False
+		if discord.utils.get(ctx.message.server.roles, name = 'Listener') not in user.roles: 
+			await bot.say("https://cdn.discordapp.com/attachments/157939461735448577/162098700213026817/11agbr.jpg") 
+			await bot.say("Don't worry bro, I got it" ) 
+			time.sleep(3)
+			await bot.add_roles(user, discord.utils.get(ctx.message.server.roles, name= 'Listener'))
+			await bot.say("Gave this user a listener tag and added them to the list if they werent already there") 
+			
+		with open('listeners.txt') as lfile: 
+			found = False
+			for line in lfile:
+				if user.id in line: 
+					print(user.name + " is already in list")
+					await bot.say( user.mention + " is already clocked in")  
+					found = True			
+		if found == False: 
+			lfile.close()
+			with open ('listeners.txt', "a") as lfile: 
+				print("Added: " + user.name + " to ready file!") 
+				lfile.write(user.id + '\n') 
+				lfile.close()  
+	else: 
+		print(ctx.message.author.name + " tried to use clockadd!")
+		await bot.say("This command is for Listener Managers only")  
+
+@bot.command(pass_context=True)
+async def clockdel(ctx, user : discord.Member): 
+	"""Managers only command"""
+	if discord.utils.get(ctx.message.server.roles, name = 'Listener Manager') in ctx.message.author.roles: 
+		fn = 'listeners.txt' 
+		f = open(fn) 
+		tmp = [] 
+		found = False 
+		for line in f: 
+			if not user.id + '\n' in line: 
+				tmp.append(line) 
+			else: 
+				found = True
+		f.close() 
+		f = open(fn, 'w') 
+		f.writelines(tmp)
+		f.close() 	
+		
+		if found == True:	
+			await bot.say("User deleted successfully") 
+			await bot.say("If they have the Listener role, it will be removed now too")
+			await bot.remove_roles(user, discord.utils.get(ctx.message.server.roles, name= 'Listener'))
+			await bot.remove_roles(user, discord.utils.get(ctx.message.server.roles, name= 'ready'))
+		else: 
+			await bot.say("That user was not found in the list, add them with clockadd or manually remove their tags") 
+
+	else: 
+		await bot.say("This command is for Listener Managers only") 
+		print(ctx.message.author.name + " tried to use clockdel") 
 
 @bot.command(pass_context=True)
 async def list(ctx):
@@ -101,6 +168,9 @@ async def listeners(ctx):
 		await bot.say("There are no listeners currently Available. You may still PM one, or wait for a member of lighthouse to help") 
 
 
+
+
+
 @bot.command(pass_context=True)
 async def status(ctx): 
 	"""Displays your current availability"""
@@ -128,7 +198,6 @@ async def clockio(ctx):
 	for p in ctx.message.server.members:
 		if p.id in legals:
 			check.append(p)
-			print(p.mention)
 	for p in check:
 		if discord.utils.get(ctx.message.server.roles, name = 'Listener') in p.roles:
 			cin.append(p)
@@ -150,33 +219,21 @@ async def clockio(ctx):
 @bot.command(pass_context=True)
 async def ready(ctx):
 	"""Allows Listeners to set their availability"""
-	gtg = False; 
-	status = 0
-	check = []
-
-	
-	for r in ctx.message.author.roles:	
-		if r.name == "Listener":
-			gtg = True;
-		if r.name == "ready":
-			status = 1
-		
-
-	if gtg == True:
-		if status == 0:
-			await bot.add_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name='ready'))
-			print ("Gave " + ctx.message.author.name + " Ready")
-			await bot.say(ctx.message.author.mention + " You are now Available. Woohoo!") 
-			status = 1
-			
-		elif status == 1: 
-			await bot.remove_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name='ready'))
-			print ("Removed " + ctx.message.author.name + " Ready role")
-			await bot.say(ctx.message.author.mention + " You are now Busy. ") 
-			status = 0
-		
+	if discord.utils.get(ctx.message.server.roles, name = 'Listener') in ctx.message.author.roles: 
+		if discord.utils.get(ctx.message.server.roles, name = 'ready')  in ctx.message.author.roles: 
+			await bot.remove_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name= 'ready')) 
+			print(ctx.message.author.name + " is busy") 
+			await bot.say(ctx.message.author.mention + ". You are now busy") 
+		else: 
+			await bot.add_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name= 'ready')) 
+			print(ctx.message.author.name + " is ready") 
+			await bot.say(ctx.message.author.mention + ". You are now ready! Woohoo!") 
 	else: 
-		await bot.say("This function works only for listeners")
+		print(ctx.message.author.name + " is not a listener") 
+		await bot.say("This command is for listeners only") 
+
+
+
 
 botname = config.get("logins", "email")
 botpass = config.get("logins", "pass")
