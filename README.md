@@ -4,7 +4,7 @@
 ## debugging and generally being a great person: alien
 
 
-use this branch for reference, the other one is 
+__use this branch for reference, the other one is old__
 
 
 Pillow bot is a listener assistant bot written for Discord. 
