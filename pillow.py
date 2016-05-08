@@ -1,243 +1,206 @@
-#Version: 0.2.1
-#last edit by: iso, at 3:47 am CST March 23
 
-import os
-import time
+#!/usr/local/bin/python3.5
+#filename=fluffedpillow.py
+#Version: 0.3.0
+#last edit by: iso, at 10:03 am CST April 4
+
 import discord
-from discord.ext import commands
-import configparser
+import asyncio
+from datetime import datetime
+import time
 
-description = '''A bot to allow listeners and persons in need to better connect with one another.  
+client = discord.Client() #obvious
+compref = '?' #command prefix for discord public chat. PM's do not require it
+owner = 'your id' #Gives full admin rights to bot regardless of roll, to this user. Me.
+def load():
 
-Written by: iso, Alienaura, and Punk''' 
-bot = commands.Bot(command_prefix='?', description=description)
-config = configparser.ConfigParser() 
-config.read("config.ini")
+        with open('/pillow/listeners.txt') as f:
+                lines = f.read().splitlines()
+                print(lines)
+        return lines
 
-@bot.event
-async def on_ready():
-	print('Logged in as')
-	print(bot.user.name)
-	print(bot.user.id)
-	print('------')
-	f = open('listeners.txt') 
-	lines = f.read().splitlines() 
-	for line in lines: 
-		print (line) 
-	f.close() 
+def say(message, words, log = False):
+        #yield from client.send_typing(message.channel)
+        yield from client.send_message(message.channel, str(words))
+        stamp = timestamp()
 
-@bot.command(pass_context=True)
-async def scan(ctx): 
-	"""This does nothing...Ignore it"""
-	count = 0
-	print (ctx.message.author.id)
-	if ctx.message.author.id == '102110056148910080':
-		outfile = open('listeners.txt', 'w+')
-		for p in ctx.message.server.members: 
-			if discord.utils.get(ctx.message.server.roles, name = 'Listener') in p.roles:
-				outfile.write(p.id + '\n')
-				count += 1
-		outfile.close()
-		print("Done scanning, added: " + str(count) + " listeners") 
-		await bot.say("Scanned: " + str(count) + "! Use clockadd to insert more") 
-	else: 
-		await bot.say ("You cant use this, sorry")
-		
-@bot.command(pass_context=True)
-async def clockadd(ctx, user : discord.Member): 
-	"""Managers only command"""
-	if discord.utils.get(ctx.message.server.roles, name = 'Listener Manager') in ctx.message.author.roles:
-		found = False
-		if discord.utils.get(ctx.message.server.roles, name = 'Listener') not in user.roles: 
-			await bot.say("https://cdn.discordapp.com/attachments/157939461735448577/162098700213026817/11agbr.jpg") 
-			await bot.say("Don't worry bro, I got it" ) 
-			time.sleep(3)
-			await bot.add_roles(user, discord.utils.get(ctx.message.server.roles, name= 'Listener'))
-			await bot.say("Gave this user a listener tag and added them to the list if they werent already there") 
-			
-		with open('listeners.txt') as lfile: 
-			found = False
-			for line in lfile:
-				if user.id in line: 
-					print(user.name + " is already in list")
-					await bot.say( user.mention + " is already clocked in")  
-					found = True			
-		if found == False: 
-			lfile.close()
-			with open ('listeners.txt', "a") as lfile: 
-				print("Added: " + user.name + " to ready file!") 
-				lfile.write(user.id + '\n') 
-				lfile.close()  
-	else: 
-		print(ctx.message.author.name + " tried to use clockadd!")
-		await bot.say("This command is for Listener Managers only")  
+        #I kinda wanted to remove this too. It really isnt useful.
+        if (log):
+                print(stamp +  'Said: ' + str(words))
+        return
 
-@bot.command(pass_context=True)
-async def clockdel(ctx, user : discord.Member): 
-	"""Managers only command"""
-	if discord.utils.get(ctx.message.server.roles, name = 'Listener Manager') in ctx.message.author.roles: 
-		fn = 'listeners.txt' 
-		f = open(fn) 
-		tmp = [] 
-		found = False 
-		for line in f: 
-			if not user.id + '\n' in line: 
-				tmp.append(line) 
-			else: 
-				found = True
-		f.close() 
-		f = open(fn, 'w') 
-		f.writelines(tmp)
-		f.close() 	
-		
-		if found == True:	
-			await bot.say("User deleted successfully") 
-			await bot.say("If they have the Listener role, it will be removed now too")
-			await bot.remove_roles(user, discord.utils.get(ctx.message.server.roles, name= 'Listener'))
-			await bot.remove_roles(user, discord.utils.get(ctx.message.server.roles, name= 'ready'))
-		else: 
-			await bot.say("That user was not found in the list, add them with clockadd or manually remove their tags") 
+def timestamp():
+        return (str(datetime.now()) + '|=> ')
 
-	else: 
-		await bot.say("This command is for Listener Managers only") 
-		print(ctx.message.author.name + " tried to use clockdel") 
+@client.async_event
+def on_ready():
+        print ('Pillow is connected!')
+        print ('My name is: ' + client.user.name)
+        print ('and My ID is: ' + client.user.id + '.')
+        print ('I report to: [' + owner+ '].')
+        print ('And my command prefix is: \"' + compref + '\".')
+        print('Startup complete')
 
-@bot.command(pass_context=True)
-async def list(ctx):
-	"""Prints out the list of listeners"""
-	readied = ''
-	aways = ''	
-	listeners = []
-	rolen = "ready"
-	l_count = 0
-	on_count = 0
-	ready = False
-	
-	for person in ctx.message.server.members: 
-		
-		for role in person.roles:
-			if role.name == "Listener":
-				listeners.append(person)
-				l_count += 1
-	for listener in listeners:
-		ready = False
-		if listener.status== discord.Status.online:
-				
-			for role in listener.roles:
-				if role.name == "ready":
-					on_count += 1
-					ready = True	
-			if ready == True: 
-				readied += "**" + listener.name + " -- Available**"
-			else: 
-				readied += listener.name
-					 
-			readied += '\n'	
-		elif listener.status == discord.Status.idle :
-			aways +=  listener.name + " --Away/Idle\n"
-	await bot.say("There are currently " + str(on_count) + "/" + str(l_count) + " listener(s) Available right now:")
-	await bot.say("-------------------------------------------Online-------------------------------------------")	
-	await bot.say(readied)
-	await bot.say("--------------------------------------------Away--------------------------------------------")
-	if aways: 
-		await bot.say(aways)
-	else: 
-		await bot.say("Nobody is away") 
-	await bot.say("If you require assistance, just type ?ineedhelp or if you would like to notify the active listeners type ?listeners")
+@client.async_event
+def on_message(message):
+        if message.author == client.user:
+                return
+
+        if message.content.startswith(compref):
+                func = message.content.lstrip(compref)
+
+                if (func == 'test'):
+                                lcount = 0
+                                ucount = 0
+                                lines = load()
+                                for mem in message.server.members:
+                                        ucount += 1
+                                        if mem.id in lines:
+                                                        ltcount += 1
+                                yield from say(message, 'There are currently: ' + str(lcount) + ' Listeners out of: ' + str(ucount) + ' users.\nHope you liked my test message!')
+                                return
+
+                if func.startswith('clockadd'):
+                        lines = load()
+                        if discord.utils.get(message.server.roles, name = 'Listener Manager') not in message.author.roles:
+                                yield from say(message, 'This command is for Listener Managers only')
+                                return
+                        userid = func.lstrip('clockadd <@')
+                        userid = userid.rstrip('>')
+                        user = discord.utils.get(message.server.members, id=userid)
+                        if user is None:
+                                yield from say(message, 'This user doesn\'t exist')
+                                return
+
+                        if discord.utils.get(message.server.roles, name = 'Listener') not in user.roles:
+                                yield from say(message, 'https://cdn.discordapp.com/attachments/157939461735448577/162098700213026817/11agbr.jpg')
+                                yield from say(message, "Don't worry bro, I got it" )
+                                time.sleep(3)
+                                yield from client.add_roles(user, discord.utils.get(message.server.roles, name= 'Listener'))
+                                yield from say(message, "Gave this user a listener tag and added them to the list if they werent already there")
+                                if user.id not in lines:
+                                        with open('/pillow/listeners.txt', 'a') as f:
+                                                f.write(user.id + '\n')
+                                        print('Wrote ' + user.name +' - id to the list')
+                        else:
+                                yield from say(message, 'That person is already a listener. I attempted to add them to the magical list anyway')
+                                if user.id not in lines:
+                                        with open('/pillow/listeners.txt', 'a') as f:
+                                                f.write(user.id + '\n')
+                                        print('Wrote ' + user.name +' - id to the list')
+                        return
+
+                if func.startswith('clockdel'):
+                        lines = load()
+                        if discord.utils.get(message.server.roles, name = 'Listener Manager') not in message.author.roles:
+                                yield from say(message, 'This command is for Listener Managers only')
+                                return
+                        userid = func.lstrip('clockdel <@')
+                        userid = userid.rstrip('>')
+                        user = discord.utils.get(message.server.members, id=userid)
+                        if user is None:
+                                yield from say(message, 'This user doesn\'t exist')
+                                return
+                        if discord.utils.get(message.server.roles, name = 'Listener') in user.roles:
+                                yield from client.remove_roles(user, discord.utils.get(message.server.roles, name= 'Listener'))
+                                yield from client.remove_roles(user, discord.utils.get(message.server.roles, name= 'ready'))
+                                yield from say(message, "Removing listener's tag and deleting them from the magic list")
+                                for line in lines:
+                                        if user.id == line:
+                                                lines.remove(line)
+                                print ('writing: ' + str(lines) + '\nTo file')
+                                with open('/pillow/listeners.txt', 'w') as f:
+                                        for line in lines:
+                                                f.write(line + '\n')
 
 
-@bot.command(pass_context=True)
-async def listeners(ctx):
-	"""Calls the listeners"""
-	l1 = []
-	output = ''
-	count = 0
-	for person in ctx.message.server.members: 
-		for r in person.roles:
-			if r.name == "Listener":
-				l1.append(person)
-	for listener in l1:
-		if listener.status == discord.Status.online:
-			for r in listener.roles:
-				if r.name == "ready":
-					count += 1
-					output += listener.mention + " "
-	if (count > 0): 
-		await bot.say(output)
-	else: 
-		await bot.say("There are no listeners currently Available. You may still PM one, or wait for a member of lighthouse to help") 
+                        else:
+
+                                yield from say(message, "Pretty sure that person isnt a listener. Or if they are, they are clocked out. So i'll just delete them from the list")
+                                if user.id in lines:
+                                        lines.remove(user.id)
+                                        with open('/pillow/listeners.txt', 'w') as f:
+                                                f.writelines(lines)
+                        return
+
+                if (func == 'list'):
+
+                        lines = load()
+                        readied = ""
+                        msg = ""
+                        l_count = 0
+                        on_count = 0
+                        for item in lines:
+                                user = discord.utils.get(message.server.members, id = item)
+
+                                if (user.status == discord.Status.online) and (discord.utils.get(message.server.roles, name = 'Listener') in user.roles):
+                                        l_count += 1
+                                        if (discord.utils.get(message.server.roles, name='ready') in user.roles):
+                                                readied += 'READY---> ' + user.name + ' <----READY\n'
+                                                on_count += 1
+                                        else:
+                                                readied += user.name + '\n'
+
+                        msg += "There are currently " + str(on_count) + " of " + str(l_count) + " online listeners actively available right now: \n\n" + '```\n' + "Online-------------------------------------------" + '\n' + readied +  '\n' + "```\n\n" + "If you need immediate help and no listeners are online pm an admin or listener manager. \n\n Listeners on the list are online and willing to help, readied listeners are just priority.\nAlso, if you would like to tag all available listeners, do `>tbro ready`"
+                        yield from say(message, msg)
+                        return
+
+                if (func == 'ready'):
+                        if discord.utils.get(message.server.roles, name = 'Listener') in message.author.roles:
+                                if discord.utils.get(message.server.roles, name = 'ready')  in message.author.roles:
+                                        yield from client.remove_roles(message.author, discord.utils.get(message.server.roles, name= 'ready'))
+                                        print(message.author.name + " is busy")
+                                        yield from say(message, message.author.mention + ". You are now busy (hopefully helping someone)")
+                                else:
+                                        yield from client.add_roles(message.author, discord.utils.get(message.server.roles, name= 'ready'))
+                                        print(message.author.name + " is ready")
+                                        yield from say(message, message.author.mention + ". You are now ready to help people! Woohoo!")
+                        else:
+                                print(message.author.name + " is not a listener")
+                                yield from say(message, "This command is for listeners only")
+                        return
+
+                if (func == 'clockio'):
+                        lines = load()
+                        if (message.author.id in lines) and (discord.utils.get(message.server.roles, name= 'Listener') in message.author.roles):
+                                yield from client.remove_roles(message.author, discord.utils.get(message.server.roles, name='Listener'))
+                                time.sleep(1)
+                                if discord.utils.get(message.server.roles, name= 'ready') in message.author.roles:
+                                        yield from client.remove_roles(message.author, discord.utils.get(message.server.roles, name= 'ready'))
+                                print (message.author.name + 'is now clocked out' )
+                                time.sleep(1)
+                                yield from say(message, message.author.mention + ", you are now clocked out!")
+                                return
+
+                        elif (message.author.id in lines) and (discord.utils.get(message.server.roles, name= 'Listener') not in message.author.roles):
+                                yield from client.add_roles(message.author, discord.utils.get(message.server.roles, name= 'Listener'))
+                                time.sleep(1)
+                                print (message.author.name + "is now clocked in")
+                                yield from say(message, message.author.mention + ", you are now clocked in! Be sure to use `?ready` too if you arent helping anyone currently")
+                                return
+
+                        else:
+                                yield from say("This command is for listeners only! If this is in error, contact <@102110056148910080>")
+                                return
 
 
+                if (func == 'status'):
+                        lines = load()
+                        if message.author.id in lines:
+                                if (discord.utils.get(message.server.roles, name= 'ready') in message.author.roles ) and (discord.utils.get(message.server.roles, name= 'Listener') in message.author.roles):
+                                        yield from say(message, "You are marked as `Ready Listener` to help people. Do `?ready` if you are helping someone to prevent getting overwhelmed")
 
+                                elif (discord.utils.get(message.server.roles, name='Listener') in message.author.roles):
+                                        yield from say(message, "You are marked as `Listener` If you are clocked in and not helping somone and have the time to monitor intt, do `?ready` please.")
 
+                                else:
+                                        yield from say(message, "You are clocked out, do `?clockio`")
+                        else:
+                                yield from say(message, "This command is for listeners only. If you are a listener, please clock in first.")
+                        return
 
-@bot.command(pass_context=True)
-async def status(ctx): 
-	"""Displays your current availability"""
-	mode = 0
-	for r in ctx.message.author.roles:	
-		if r.name == "Listener":
-			gtg = True;
-		if r.name == "ready":
-			mode = 1
-	if mode == 1:
-		await bot.say("You are currently Available to help people") 
-	else: 
-		await bot.say("You are unAvailable to help at this time")
+                if (func == 'about'):
+                        yield from say(message, '```\n[Pillow v1.3  AKA Listenerbot]\n\nA Discord bot created for Patch Gaming as a tool to help persons in need\nbetter receive help from the listeners.\nIt also allows listeners to better manage their\navailability.```\n\nIf you are interested in becoming a listener. PM <@96461620976300032> , <@102110056148910080> , <@92374814211203072> , <@108309693369196544> , or <@95385476541718528>')
 
-
-@bot.command(pass_context=True)
-async def clockio(ctx):
-	"""Lets listeners clock in and out"""
-	gtg = False
-	status = 0
-	check = []
-	legals = [line.rstrip('\n') for line in open('listeners.txt')]
-	cin = []
-	cout = []
-	for p in ctx.message.server.members:
-		if p.id in legals:
-			check.append(p)
-	for p in check:
-		if discord.utils.get(ctx.message.server.roles, name = 'Listener') in p.roles:
-			cin.append(p)
-		else: 
-			cout.append(p)
-				
-					
-	if (ctx.message.author in check and ctx.message.author in cin):
-		await bot.remove_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name='Listener'))
-		print (ctx.message.author.mention + 'is now clocked out' ) 
-		await bot.say(ctx.message.author.mention + ", you are now clocked out!") 
-	elif (ctx.message.author in check and ctx.message.author in cout): 
-		await bot.add_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name= 'Listener'))
-		print (ctx.message.author.mention + "is now clocked in") 
-		await bot.say(ctx.message.author.mention + ", you are now clocked in!") 
-	else: 
-		await bot.say("This command is for listeners only! If this is in error, contact kev or iso")
-
-@bot.command(pass_context=True)
-async def ready(ctx):
-	"""Allows Listeners to set their availability"""
-	if discord.utils.get(ctx.message.server.roles, name = 'Listener') in ctx.message.author.roles: 
-		if discord.utils.get(ctx.message.server.roles, name = 'ready')  in ctx.message.author.roles: 
-			await bot.remove_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name= 'ready')) 
-			print(ctx.message.author.name + " is busy") 
-			await bot.say(ctx.message.author.mention + ". You are now busy") 
-		else: 
-			await bot.add_roles(ctx.message.author, discord.utils.get(ctx.message.server.roles, name= 'ready')) 
-			print(ctx.message.author.name + " is ready") 
-			await bot.say(ctx.message.author.mention + ". You are now ready! Woohoo!") 
-	else: 
-		print(ctx.message.author.name + " is not a listener") 
-		await bot.say("This command is for listeners only") 
-
-
-
-
-botname = config.get("logins", "email")
-botpass = config.get("logins", "pass")
-
-bot.run(botname, botpass)
-
-
+client.run('your token here') 
+#Ok not that you really need to run pillowbot, at all. Like its for one server, fuck off. This is more for alien and me
