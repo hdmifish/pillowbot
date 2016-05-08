@@ -1,3 +1,13 @@
+WHOA THERE, HEADS UP! 
+
+__This is the old version, it doesn't work as well, and there are bugs everywhere. Try the new version, in the rebuild branch__
+
+
+
+
+
+
+
 # Pillowbot Readme
 ## Written by Punk, Alien, and iso. 
 ##### (*but mainly iso*) 
