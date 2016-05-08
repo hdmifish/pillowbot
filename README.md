@@ -72,9 +72,10 @@ Im still learning github. So there may be a clusterfuck of pulls and stuff. Plea
    $ sudo mkdir /pillow (you can name this whatever you like) 
    $ sudo git clone https://github.com/hdmifish/pillowbot.git /pillow
    $ cd /pillow
-   <fill out and rename your config file to config.ini, do not use ' or " when changing the fields> 
-   -----if you dont know how to rename do $ sudo mv config.txt config.ini 
+   $ checkout rebuild
+   ~~<fill out and rename your config file to config.ini, do not use ' or " when changing the fields>~~ 
+   ~~if you dont know how to rename do $ sudo mv config.txt config.ini~~
    $ python3.5 pillow.py 
    ```
 
-5. If you get any errors, put them in issues. This is still under development. Currently as I'm writing this pillowbot is `pillowbot 0.2.0` 
+5. If you get any errors, put them in issues. This is still under development. Currently as I'm writing this pillowbot is `pillowbot 1.0` 
