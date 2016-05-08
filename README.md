@@ -1,16 +1,18 @@
 # Pillowbot Readme
-## Written by Punk, Alien, and iso. 
-##### (*but mainly iso*) 
+## Concept by Punk
+## Written by iso
+## debugging and generally being a great person: alien
 
 
-
+use this branch for reference, the other one is 
 
 
 Pillow bot is a listener assistant bot written for Discord. 
 
-Discord.py is dependant on python 3.4.1+ Python3.5 works great though. 
+##Requirements: 
+Python3.5 (sudo apt-get python3.5 python3.5-dev) 
 
-It can be downloaded here [python3.5.0 tarball] (https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tgz) 
+It can be downloaded here [python3.5.0 tarball] (https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tgz)  << if you dont wanna mess with ppa
 
 Discord.py by Rapptz can be downloaded [here] (https://github.com/Rapptz/discord.py)
 
