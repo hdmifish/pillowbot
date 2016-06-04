@@ -63,7 +63,7 @@ Im still learning github. So there may be a clusterfuck of pulls and stuff. Plea
 
 
 2. sit in your home directory (`~`) and do `pip3.5 install git+https://github.com/Rapptz/discord.py@async` 
-3. then do `pip3.5 install --upgade discord.py`
+3. then do `pip3.5 install --upgrade discord.py`
 
    *and now for the fun bits* 
 
